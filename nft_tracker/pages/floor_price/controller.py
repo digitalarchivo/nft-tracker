@@ -1,21 +1,83 @@
 from pages.floor_price.view import app
 from dash.dependencies import Input, Output
-from pages.floor_price.model import plot_nft_hist, plot_nft_markets, send_email
+from dash import html
+from pages.floor_price.model import (
+    create_strategy_table, create_btc_table, calculate_metrics,
+    format_currency, format_mnav, get_current_date
+)
+from utils.data import get_all_strategies_data, get_btc_treasury_data
 
 @app.callback(
-              Output(component_id = 'plot', component_property = 'figure'),
-              Input(component_id = 'MODE', component_property= 'value'),
-              Input(component_id = 'NFT_ID', component_property= 'value'),
-              Input(component_id = 'DURATION', component_property= 'value'),
-              Input(component_id = 'WINDOW_SIZE', component_property= 'value'),
-              Input(component_id = 'ORDER_BY', component_property= 'value'),
-              Input(component_id = 'NUM_ENTRIES', component_property= 'value'),
-              )
-def graph_update(mode, nft_id, duration, window_size, order_by, num_entries):
+    [
+        Output('currentDate', 'children'),
+        Output('totalStrategies', 'children'),
+        Output('totalMarketCap', 'children'),
+        Output('totalNftValue', 'children'),
+        Output('categoryMnav', 'children'),
+        Output('avgMnav', 'children'),
+        Output('ethPrice', 'children'),
+        Output('strategyTable', 'children'),
+        Output('btcTable', 'children'),
+        Output('statusDot', 'className'),
+        Output('statusText', 'children'),
+        Output('errorMessage', 'children'),
+        Output('errorMessage', 'style')
+    ],
+    [
+        Input('refreshBtn', 'n_clicks'),
+        Input('interval-component', 'n_intervals'),
+        Input('data-store', 'data')
+    ]
+)
+def update_all(refresh_clicks, n_intervals, data_store):
+    """Update all data when refresh button is clicked or interval fires"""
+    try:
+        strategies_data, eth_price, btc_price = get_all_strategies_data()
+        btc_treasury_data = get_btc_treasury_data(btc_price)
+        
+        metrics = calculate_metrics(strategies_data)
+        
+        strategy_table = create_strategy_table(strategies_data)
+        btc_table = create_btc_table(btc_treasury_data, btc_price)
+        
+        from datetime import datetime
+        update_time = datetime.now().strftime('%H:%M:%S')
+        
+        return (
+            get_current_date(),
+            metrics['totalStrategies'],
+            format_currency(metrics['totalMarketCap']),
+            format_currency(metrics['totalNftValue']),
+            format_mnav(metrics['categoryMnav']),
+            format_mnav(metrics['avgMnav']),
+            format_currency(eth_price),
+            strategy_table,
+            btc_table,
+            'status-dot',
+            f'Updated: {update_time}',
+            '',
+            {'display': 'none'}
+        )
+    except Exception as e:
+        return (
+            get_current_date(),
+            '—', '—', '—', '—', '—', '—',
+            html.Div('Error loading data', className='empty-state'),
+            html.Div('Error loading data', className='empty-state'),
+            'status-dot error',
+            'Failed to fetch data',
+            f'Error: {str(e)}',
+            {'display': 'block'}
+        )
 
-    if mode == "market_data":
-        return plot_nft_markets(order_by, int(num_entries))
-    elif mode == "hist_floor_price":
-        return plot_nft_hist(nft_id, int(duration), int(window_size))
-    else:
-        return send_email(nft_id, int(duration), int(window_size))
+@app.callback(
+    Output('statusDot', 'className', allow_duplicate=True),
+    Output('statusText', 'children', allow_duplicate=True),
+    Input('refreshBtn', 'n_clicks'),
+    prevent_initial_call=True
+)
+def set_loading_status(n_clicks):
+    """Set loading status when refresh button is clicked"""
+    if n_clicks:
+        return 'status-dot loading', 'Fetching data...'
+    return 'status-dot', 'Ready'

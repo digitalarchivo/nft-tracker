@@ -6,12 +6,15 @@ PRO_URL = "https://pro-api.coingecko.com/api/v3"
 
 # Get local Pro API key
 def get_key():
-    f = open("/home/vikas/Documents/CG_pro_key.json")
-    key_dict = json.load(f)
-    return key_dict["key"]
+    # Using provided CoinGecko API key
+    return "CG-wsr54JajbpXGMajeRzYgZVQW"
 
 # Switch between demo and pro accounts
-use_demo = {"accept": "application/json"}
+# Demo keys use the public API endpoint (api.coingecko.com) with x-cg-demo-api-key header
+use_demo = {
+    "accept": "application/json",
+    "x-cg-demo-api-key": get_key()
+}
 
 use_pro = {
          "accept": "application/json",
@@ -26,3 +29,5 @@ def get_response(endpoint, headers, params, URL):
         return data
     else:
         print(f"Failed to fetch data, check status code {response.status_code}")
+        print(f"Response: {response.text}")
+        return None

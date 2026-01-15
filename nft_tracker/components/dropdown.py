@@ -3,18 +3,16 @@ from dash import dcc
 def nft_dropdown():
     dropdown = dcc.Dropdown(id = 'NFT_ID',
     options = [
-    {'label': 'bitcoin-frogs', 'value':'bitcoin-frogs' },
-    {'label': 'mutant-ape-yacht-club', 'value':'mutant-ape-yacht-club'},
-    {'label': 'mad-lads', 'value':'mad-lads'},
-    {'label': 'cryptopunks', 'value': 'cryptopunks'},
-    {'label': 'the-crop-collective', 'value': 'the-crop-collective'},
-    {'label': 'galxe-oat-v2', 'value': 'galxe-oat-v2'},
-    {'label': 'pudgy-penguins', 'value': 'pudgy-penguins'},
-    {'label': 'blendkemon', 'value': 'blendkemon'},
-    {'label': 'autoglyphs', 'value': 'autoglyphs'},
-    {'label': 'azuki', 'value': 'azuki'}
+    {'label': 'CryptoPunks', 'value': 'cryptopunks'},
+    {'label': 'Bored Ape Yacht Club', 'value': 'bored-ape-yacht-club'},
+    {'label': 'Azuki', 'value': 'azuki'},
+    {'label': 'Moonbirds', 'value': 'moonbirds'},
+    {'label': 'Pudgy Penguins', 'value': 'pudgy-penguins'},
+    {'label': 'Chimpers', 'value': 'chimpers'},
+    {'label': 'Vibes', 'value': 'vibes'},
+    {'label': 'Meebits', 'value': 'meebits'}
     ],
-    value = 'pudgy-penguins')
+    value = 'cryptopunks')
     
     return dropdown
 
