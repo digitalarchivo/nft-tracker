@@ -1,6 +1,16 @@
+import os
+import sys
 from dash import html, dcc
-from utils.data import get_all_strategies_data, get_btc_treasury_data
 from datetime import datetime
+
+# ----------------------------------------
+# Ensure absolute imports work
+# ----------------------------------------
+BASE_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../.."))
+if BASE_PATH not in sys.path:
+    sys.path.insert(0, BASE_PATH)
+
+from nft_tracker.utils.data import get_all_strategies_data, get_btc_treasury_data
 
 def format_currency(value, decimals=0):
     """Format currency value"""
