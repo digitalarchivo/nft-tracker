@@ -1,13 +1,24 @@
+import os
+import sys
 import dash
 from dash import html, dcc
-import os
 
+# ----------------------------------------
+# Ensure absolute imports work
+# ----------------------------------------
+BASE_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../.."))
+if BASE_PATH not in sys.path:
+    sys.path.insert(0, BASE_PATH)
+
+# ----------------------------------------
+# App configuration
+# ----------------------------------------
 APP_TITLE = "Strategy Token mNAV Tracker"
 
-# Assets folder path relative to this package
-ASSETS_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../../assets')
-ASSETS_PATH = os.path.abspath(ASSETS_PATH)  # Normalize path
+# Assets folder path
+ASSETS_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../assets"))
 
+# Create Dash app
 app = dash.Dash(
     __name__,
     assets_folder=ASSETS_PATH,
