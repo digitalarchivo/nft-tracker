@@ -1,4 +1,6 @@
-from app import server
+# nft_tracker/api/index.py
 
-# Vercel looks for "app"
+from nft_tracker.app import server
+
+# Vercel looks for variable called `app`
 app = server

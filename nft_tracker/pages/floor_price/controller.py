@@ -9,11 +9,25 @@ from nft_tracker.pages.floor_price.model import (
     format_mnav,
     get_current_date
 )
-from nft_tracker.utils.data import (
-    get_all_strategies_data,
-    get_btc_treasury_data
-)
+from nft_tracker.utils.data import get_all_strategies_data, get_btc_treasury_data
+from functools import lru_cache
+import time
+from datetime import datetime
 
+# ---------------------------
+# Caching to reduce API calls
+# ---------------------------
+@lru_cache(maxsize=1)
+def get_cached_data(ttl_seconds=30):
+    """Cache NFT + BTC data for ttl_seconds."""
+    strategies_data, eth_price, btc_price = get_all_strategies_data()
+    btc_treasury_data = get_btc_treasury_data(btc_price)
+    timestamp = time.time()
+    return strategies_data, eth_price, btc_price, btc_treasury_data, timestamp
+
+# ---------------------------
+# Main update callback
+# ---------------------------
 @app.callback(
     [
         Output('currentDate', 'children'),
@@ -37,17 +51,14 @@ from nft_tracker.utils.data import (
     ]
 )
 def update_all(refresh_clicks, n_intervals, data_store):
-    """Update all data when refresh button is clicked or interval fires"""
+    """Update all NFT + BTC data."""
     try:
-        strategies_data, eth_price, btc_price = get_all_strategies_data()
-        btc_treasury_data = get_btc_treasury_data(btc_price)
-        
+        strategies_data, eth_price, btc_price, btc_treasury_data, _ = get_cached_data()
         metrics = calculate_metrics(strategies_data)
         
         strategy_table = create_strategy_table(strategies_data)
         btc_table = create_btc_table(btc_treasury_data, btc_price)
         
-        from datetime import datetime
         update_time = datetime.now().strftime('%H:%M:%S')
         
         return (
@@ -77,6 +88,9 @@ def update_all(refresh_clicks, n_intervals, data_store):
             {'display': 'block'}
         )
 
+# ---------------------------
+# Loading status callback
+# ---------------------------
 @app.callback(
     Output('statusDot', 'className', allow_duplicate=True),
     Output('statusText', 'children', allow_duplicate=True),
@@ -84,7 +98,7 @@ def update_all(refresh_clicks, n_intervals, data_store):
     prevent_initial_call=True
 )
 def set_loading_status(n_clicks):
-    """Set loading status when refresh button is clicked"""
+    """Set loading indicator when refresh clicked."""
     if n_clicks:
         return 'status-dot loading', 'Fetching data...'
     return 'status-dot', 'Ready'
