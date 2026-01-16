@@ -1,12 +1,12 @@
 import dash
 from dash import html, dcc
-from datetime import datetime
+import os
 
 APP_TITLE = "Strategy Token mNAV Tracker"
-import os
-# Get the absolute path to assets folder
-BASE_PATH = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-ASSETS_PATH = os.path.join(BASE_PATH, 'assets')
+
+# Assets folder path relative to this package
+ASSETS_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../../assets')
+ASSETS_PATH = os.path.abspath(ASSETS_PATH)  # Normalize path
 
 app = dash.Dash(
     __name__,

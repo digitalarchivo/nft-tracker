@@ -1,5 +1,5 @@
-from pages.floor_price.view import app, layout
-from pages.floor_price.controller import *
+from nft_tracker.pages.floor_price.view import app, layout
+from nft_tracker.pages.floor_price.controller import *
 
 app.layout = layout
 

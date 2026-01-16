@@ -1,11 +1,18 @@
-from pages.floor_price.view import app
+from nft_tracker.pages.floor_price.view import app
 from dash.dependencies import Input, Output
 from dash import html
-from pages.floor_price.model import (
-    create_strategy_table, create_btc_table, calculate_metrics,
-    format_currency, format_mnav, get_current_date
+from nft_tracker.pages.floor_price.model import (
+    create_strategy_table,
+    create_btc_table,
+    calculate_metrics,
+    format_currency,
+    format_mnav,
+    get_current_date
 )
-from utils.data import get_all_strategies_data, get_btc_treasury_data
+from nft_tracker.utils.data import (
+    get_all_strategies_data,
+    get_btc_treasury_data
+)
 
 @app.callback(
     [
