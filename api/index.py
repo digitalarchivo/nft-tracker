@@ -1,6 +1,5 @@
-# nft_tracker/api/index.py
+# api/index.py
+from nft_tracker.pages.floor_price.view import app  # Use the Dash app instance from your view
 
-from nft_tracker.app import server
-
-# Vercel looks for variable called `app`
-app = server
+# Vercel looks for this variable
+app = app.server if hasattr(app, 'server') else app
