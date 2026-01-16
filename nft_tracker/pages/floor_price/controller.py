@@ -1,6 +1,20 @@
-from nft_tracker.pages.floor_price.view import app
+import os
+import sys
+import time
+from functools import lru_cache
+from datetime import datetime
+
 from dash.dependencies import Input, Output
 from dash import html
+
+# ----------------------------------------
+# Ensure absolute imports work
+# ----------------------------------------
+BASE_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../.."))
+if BASE_PATH not in sys.path:
+    sys.path.insert(0, BASE_PATH)
+
+from nft_tracker.pages.floor_price.view import app
 from nft_tracker.pages.floor_price.model import (
     create_strategy_table,
     create_btc_table,
@@ -10,16 +24,16 @@ from nft_tracker.pages.floor_price.model import (
     get_current_date
 )
 from nft_tracker.utils.data import get_all_strategies_data, get_btc_treasury_data
-from functools import lru_cache
-import time
-from datetime import datetime
 
 # ---------------------------
 # Caching to reduce API calls
 # ---------------------------
 @lru_cache(maxsize=1)
 def get_cached_data(ttl_seconds=30):
-    """Cache NFT + BTC data for ttl_seconds."""
+    """
+    Cache NFT + BTC data for ttl_seconds.
+    Returns: strategies_data, eth_price, btc_price, btc_treasury_data, timestamp
+    """
     strategies_data, eth_price, btc_price = get_all_strategies_data()
     btc_treasury_data = get_btc_treasury_data(btc_price)
     timestamp = time.time()
